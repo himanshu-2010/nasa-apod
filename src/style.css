@@ -1,9 +1,260 @@
 :root {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  color-scheme: light dark;
+  --bg: #0a0520;
+  --accent: #a855f7;
+  --text: #f3f4f6;
+  --text-dim: #c4b5fd;
+
+  font-family: 'Black Ops One', system-ui, sans-serif;
+  color-scheme: dark;
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
+  position: relative;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: -1;
+  background: var(--accent);
+}
+
+body::before {
+  left: 0;
+  clip-path: polygon(
+  0 0,
+  100% 0,
+    92% 1.5%,
+    100% 3.0%,
+    92% 4.5%,
+    100% 6.0%,
+    92% 7.5%,
+    100% 9.0%,
+    92% 10.5%,
+    100% 12.0%,
+    92% 13.5%,
+    100% 15.0%,
+    92% 16.5%,
+    100% 18.0%,
+    92% 19.5%,
+    100% 21.0%,
+    92% 22.5%,
+    100% 24.0%,
+    92% 25.5%,
+    100% 27.0%,
+    92% 28.5%,
+    100% 30.0%,
+    92% 31.5%,
+    100% 33.0%,
+    92% 34.5%,
+    100% 36.0%,
+    92% 37.5%,
+    100% 39.0%,
+    92% 40.5%,
+    100% 42.0%,
+    92% 43.5%,
+    100% 45.0%,
+    92% 46.5%,
+    100% 48.0%,
+    92% 49.5%,
+    100% 51.0%,
+    92% 52.5%,
+    100% 54.0%,
+    92% 55.5%,
+    100% 57.0%,
+    92% 58.5%,
+    100% 60.0%,
+    92% 61.5%,
+    100% 63.0%,
+    92% 64.5%,
+    100% 66.0%,
+    92% 67.5%,
+    100% 69.0%,
+    92% 70.5%,
+    100% 72.0%,
+    92% 73.5%,
+    100% 75.0%,
+    92% 76.5%,
+    100% 78.0%,
+    92% 79.5%,
+    100% 81.0%,
+    92% 82.5%,
+    100% 84.0%,
+    92% 85.5%,
+    100% 87.0%,
+    92% 88.5%,
+    100% 90.0%,
+    92% 91.5%,
+    100% 93.0%,
+    92% 94.5%,
+    100% 96.0%,
+    92% 97.5%,
+    0 100%
+);
+}
+
+body::after {
+  right: 0;
+  clip-path: polygon(
+  100% 0,
+  0 0,
+    8% 1.5%,
+    0 3.0%,
+    8% 4.5%,
+    0 6.0%,
+    8% 7.5%,
+    0 9.0%,
+    8% 10.5%,
+    0 12.0%,
+    8% 13.5%,
+    0 15.0%,
+    8% 16.5%,
+    0 18.0%,
+    8% 19.5%,
+    0 21.0%,
+    8% 22.5%,
+    0 24.0%,
+    8% 25.5%,
+    0 27.0%,
+    8% 28.5%,
+    0 30.0%,
+    8% 31.5%,
+    0 33.0%,
+    8% 34.5%,
+    0 36.0%,
+    8% 37.5%,
+    0 39.0%,
+    8% 40.5%,
+    0 42.0%,
+    8% 43.5%,
+    0 45.0%,
+    8% 46.5%,
+    0 48.0%,
+    8% 49.5%,
+    0 51.0%,
+    8% 52.5%,
+    0 54.0%,
+    8% 55.5%,
+    0 57.0%,
+    8% 58.5%,
+    0 60.0%,
+    8% 61.5%,
+    0 63.0%,
+    8% 64.5%,
+    0 66.0%,
+    8% 67.5%,
+    0 69.0%,
+    8% 70.5%,
+    0 72.0%,
+    8% 73.5%,
+    0 75.0%,
+    8% 76.5%,
+    0 78.0%,
+    8% 79.5%,
+    0 81.0%,
+    8% 82.5%,
+    0 84.0%,
+    8% 85.5%,
+    0 87.0%,
+    8% 88.5%,
+    0 90.0%,
+    8% 91.5%,
+    0 93.0%,
+    8% 94.5%,
+    0 96.0%,
+    8% 97.5%,
+    100% 100%
+);
+}
+
+#app {
+  max-width: min(1000px, 92vw);
+  margin: 0 auto;
+  padding: 48px 16px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+#app h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+
+#media {
+  width: min(92vw, 60vh);
+  margin: 24px 0;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(168, 85, 247, 0.35);
+}
+
+#media.loading {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.placeholder {
+  flex: 1;
+  background: linear-gradient(110deg, #1a1240 8%, #2a1d5e 18%, #1a1240 33%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+#media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 62vh;
+  object-fit: contain;
+}
+
+#media.video iframe,
+#media.video video {
+  display: block;
+  width: 100%;
+  border: 0;
+  aspect-ratio: 16 / 9;
+}
+
+#app p {
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-dim);
+  max-width: 65ch;
+}
+
+@media (max-width: 600px) {
+  body::before,
+  body::after {
+    display: none;
+  }
+
+  #app {
+    padding: 24px 16px;
+  }
 }
