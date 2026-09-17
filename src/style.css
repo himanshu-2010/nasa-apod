@@ -1,8 +1,8 @@
 :root {
-  --bg: #0a0520;
-  --accent: #a855f7;
+  --bg: #0a0202;
+  --accent: #ff2d2d;
   --text: #f3f4f6;
-  --text-dim: #c4b5fd;
+  --text-dim: #ffb3b3;
 
   font-family: 'Black Ops One', system-ui, sans-serif;
   color-scheme: dark;
@@ -217,7 +217,7 @@ body::after {
   border: 2px solid var(--accent);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 0 40px rgba(168, 85, 247, 0.35);
+  box-shadow: 0 0 40px rgba(255, 45, 45, 0.35);
 }
 
 #media.loading {
@@ -228,7 +228,7 @@ body::after {
 
 .placeholder {
   flex: 1;
-  background: linear-gradient(110deg, #1a1240 8%, #2a1d5e 18%, #1a1240 33%);
+  background: linear-gradient(110deg, #170505 8%, #330b0b 18%, #170505 33%);
   background-size: 200% 100%;
   animation: shimmer 1.2s linear infinite;
 }
