@@ -140,6 +140,272 @@ git commit -m "describe your change"
 git push
 ```
 
+## Build It From Scratch
+
+Follow these steps to recreate this project from zero. Each step maps to something already covered above, so this also works as a review of the whole build.
+
+### Step 1 — Scaffold and clean the Vite template
+
+```sh
+npm create vite@latest astronomy -- --template vanilla
+cd astronomy
+npm install
+npm run dev
+```
+
+Vite ships demo files that just prove the server works. Remove them all:
+
+```sh
+rm src/counter.js src/assets/vite.svg src/assets/javascript.svg src/assets/hero.png public/icons.svg
+```
+
+> Paths differ between Vite versions. List `src` and `public` first (`ls -R src public`) and delete whatever demo assets actually exist. If a path errors with "No such file", the file lives elsewhere.
+
+Then wipe the boilerplate. Replace `src/main.js` with just:
+
+```js
+import './style.css'
+
+document.querySelector('#app').innerHTML = ''
+```
+
+And replace `src/style.css` with a nearly-empty shell:
+
+```css
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+}
+```
+
+### Step 2 — Get and store the API key
+
+1. Go to https://api.nasa.gov and submit the basic form — a free key is emailed instantly.
+2. Create `.env` in the project root:
+
+   ```sh
+   VITE_NASA_API_KEY=your_actual_key_here
+   ```
+
+   - The name **must** start with `VITE_` — Vite only exposes prefixed variables to frontend code.
+   - No spaces around `=`.
+3. Create `.env.example` with the variable name but no real value — this one goes to GitHub.
+4. Make sure `.gitignore` contains:
+
+   ```gitignore
+   .env
+   node_modules
+   dist
+   ```
+
+5. Restart the dev server after any `.env` change — Vite only reads it at startup (`Ctrl+C`, then `npm run dev`).
+
+### Step 3 — Set up the page and fonts
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Black+Ops+One&display=swap" rel="stylesheet" />
+    <title>astronomy</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+`type="module"` is what makes `import.meta.env` and ES module `import` work.
+
+### Step 4 — The JavaScript
+
+The whole app lives in `src/main.js`:
+
+```js
+import './style.css'
+
+const API_KEY = import.meta.env.VITE_NASA_API_KEY;
+const app = document.querySelector('#app');
+
+function fetchAPOD() {
+  app.innerHTML = '<p>loading...</p>';
+
+  fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`)
+    .then(response => response.json())
+    .then(data => {
+      let media;
+
+      if (data.media_type === 'image') {
+        media = `<div id="media" class="loading"><div class="placeholder"></div></div>`;
+      } else if (data.url.includes('youtube')) {
+        media = `<div id="media" class="video"><iframe src="${data.url.replace('watch?v=', 'embed/')}" allowfullscreen></iframe></div>`;
+      } else {
+        media = `<div id="media" class="video"><video src="${data.url}" controls></video></div>`;
+      }
+
+      app.innerHTML = `
+        <h1>${data.title}</h1>
+        ${media}
+        <p>${data.explanation}</p>
+      `;
+
+      if (data.media_type === 'image') {
+        const mediaEl = document.querySelector('#media');
+        const img = new Image();
+        img.alt = data.title;
+        img.onload = () => {
+          mediaEl.classList.remove('loading');
+          mediaEl.replaceChildren(img);
+        };
+        img.onerror = () => {
+          mediaEl.classList.remove('loading');
+          mediaEl.innerHTML = '<p>Image could not be loaded.</p>';
+        };
+        img.src = data.url;
+      }
+    })
+    .catch(err => {
+      app.innerHTML = `<p>Error: ${err.message}</p>`;
+    });
+}
+
+fetchAPOD();
+```
+
+The four steps of fetching in action: **request** the URL → **convert** with `response.json()` → **use** the fields in the template → **display** via `innerHTML`. Media URLs that are YouTube links need an iframe (converting `watch?v=` to `embed/`), otherwise keep a `<video>` tag.
+
+### Step 5 — The CSS
+
+A space-themed shell with zigzag side strips:
+
+```css
+:root {
+  --bg: #0a0520;
+  --accent: #a855f7;
+  --text: #f3f4f6;
+  --text-dim: #c4b5fd;
+  font-family: 'Black Ops One', system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: -1;
+  background: var(--accent);
+}
+
+body::before {
+  left: 0;
+  clip-path: polygon(0 0, 100% 0, 92% 2%, 100% 4%, /* ...zigzag down... */ 0 100%);
+}
+
+body::after {
+  right: 0;
+}
+
+#media {
+  width: min(92vw, 60vh);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#media.loading {
+  aspect-ratio: 1 / 1;
+}
+
+#media img {
+  width: 100%;
+  height: auto;
+  max-height: 62vh;
+  object-fit: contain;
+}
+
+#media.video iframe,
+#media.video video {
+  aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 600px) {
+  body::before,
+  body::after {
+    display: none;
+  }
+}
+```
+
+Key ideas:
+
+- **`clip-path: polygon()`** cuts a rectangle into any shape — each `x% y%` pair is a point on the cut line. Zap the zigzag under Clippy (https://bennettfeely.com/clippy/) and paste the generated coordinates instead of hand-writing 60 points.
+- **Responsive media** uses `vh`/`vw`: `min(92vw, 60vh)` width means the box never wider than the screen and never taller than ~60% of the viewport.
+- **Placeholder → snap**: the `loading` state is a `1 / 1` square. When `img.onload` fires, the class is removed and the container follows the image's real aspect ratio (`height: auto`), so there's no layout jump.
+
+### Step 6 — Deploy to GitHub Pages
+
+1. Push the project (see the [Deployment](#deployment) section for the full details).
+2. Add `vite.config.js` with the exact repo name — assets 404 without it:
+
+   ```js
+   import { defineConfig } from 'vite'
+
+   export default defineConfig({
+     base: '/your-repo-name/',
+   })
+   ```
+
+3. Store the key as a repo secret (`Settings → Secrets and variables → Actions`): name `VITE_NASA_API_KEY`, value your real key.
+4. Create `.github/workflows/deploy.yml` with the workflow from the [Deployment](#deployment) section. It runs on every push to `main`, installs deps, builds with the secret injected via `env:`, and ships `dist` with `actions/deploy-pages@v4`.
+5. Enable Pages (`Settings → Pages → Source: GitHub Actions`), then push. Your site is live at `https://yourusername.github.io/your-repo-name/`.
+
+### Step 7 (optional) — Add the date picker
+
+Extend `fetchAPOD` to accept a date and append it to the URL:
+
+```js
+function fetchAPOD(date = '') {
+  const url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}${date ? `&date=${date}` : ''}`;
+  /* ...rest unchanged, using the url variable in fetch(url)... */
+}
+
+const dateInput = document.querySelector('#datepicker');
+dateInput.max = new Date().toISOString().split('T')[0];
+dateInput.min = '1995-06-16';
+dateInput.addEventListener('change', () => fetchAPOD(dateInput.value));
+```
+
+Add the input right before `#app` in `index.html`:
+
+```html
+<input type="date" id="datepicker" />
+<div id="app"></div>
+```
+
+APOD only goes back to 1995-06-16 and has no future images, so clamp the picker with `min`/`max`.
+
 ## Things That Went Wrong While Building This
 
 Real issues hit during development, and what fixed them:
