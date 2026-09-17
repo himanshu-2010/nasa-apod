@@ -13,6 +13,7 @@ A single-page app that fetches NASA's Astronomy Picture of the Day (APOD) and di
 ## Features
 
 - Fetches the daily image/video from the NASA APOD API
+- Date picker to browse any day back to 1995-06-16 (future dates blocked)
 - Handles images, direct video files, and YouTube links with the correct embed
 - Square shimmering placeholder while media loads, then snaps to the image's real aspect ratio
 - Fully responsive (`vh` / `vw` sizing) so media always fits the viewport
